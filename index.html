@@ -1637,8 +1637,10 @@ function tapeStopAt(t0,d){state.tapeWin={t0,d};wobble.delayTime.setValueAtTime(.
 /* ---------------- sequencer ---------------- */
 let nextT=0,schedStep=0,timer=null;const uiQueue=[];
 function stepDur(){return 60/state.bpm/4;}
+let LOOK=.12,schedLate=false;   // scheduler lookahead (s); recordings raise it so a slowed background timer can't make notes late. schedLate: a note was scheduled after its time
 function schedule(){
-  while(nextT<ctx.currentTime+.12){
+  if(state.playing&&nextT<ctx.currentTime-.003)schedLate=true;
+  while(nextT<ctx.currentTime+LOOK){
     if(schedStep===0){state.fillBar=state.fillArmed;state.fillArmed=false;state.bar=(state.bar||0)+1;state.lastBarT=nextT;
       state.stutter=state.sus>.5&&state.bar%2===0&&!state.fillBar&&Math.random()<(state.sus-.4)*1.3;   // beat-repeat the snare beat
       tapeReset(nextT);if(state.sus>=.8&&state.bar%4===0)tapeStopAt(nextT+stepDur()*12,stepDur()*4);
@@ -2456,16 +2458,45 @@ function midiBytes(bars){const PPQ=96,stepT=PPQ/4,pt=patterns[state.ptn],vlq=n=>
   return new Uint8Array([0x4D,0x54,0x68,0x64,0,0,0,6,0,1,0,4,0,PPQ,
     ...track([{t:0,o:0,b:[0xFF,0x51,0x03,(tempo>>16)&255,(tempo>>8)&255,tempo&255]},{t:0,o:0,b:[0xFF,0x58,0x04,4,2,24,8]}],'GANGSTALKERS'),
     ...track(drums,'DRUMS'),...track(bass,'808'),...track(chords,'CHORDS')]);}
+// ---------- recording tap: an AudioWorklet on the audio thread (a busy page can't make it drop audio); ScriptProcessor only as a fallback.
+// Chunks arrive in order and are stored back to back; browser timestamps are never used. Markers on a 3rd channel place and verify the take.
+let recMod=null;
+function loadRec(){if(!recMod)recMod=(ctx.audioWorklet&&window.AudioWorkletNode)?ctx.audioWorklet.addModule('tl/rec-worklet.js').then(()=>true,()=>false):Promise.resolve(false);return recMod;}
+async function openTap(markers){const split=ctx.createChannelSplitter(2),merge=ctx.createChannelMerger(3),sink=ctx.createGain();sink.gain.value=0;
+  limiter.connect(split);split.connect(merge,0,0);split.connect(merge,1,1);markers.forEach(m=>m.connect(merge,0,2));
+  const useW=await loadRec();let node,cb=null;
+  if(useW){node=new AudioWorkletNode(ctx,'gs-rec',{numberOfInputs:1,numberOfOutputs:1,channelCount:3,channelCountMode:'explicit',channelInterpretation:'discrete',outputChannelCount:[1]});node.port.onmessage=e=>{if(cb)cb(e.data.L,e.data.R,e.data.M);};}
+  else{node=ctx.createScriptProcessor(4096,3,1);node.onaudioprocess=e=>{const ib=e.inputBuffer;if(cb)cb(ib.getChannelData(0).slice(),ib.getChannelData(1).slice(),ib.getChannelData(2).slice());};}
+  merge.connect(node);node.connect(sink);sink.connect(ctx.destination);
+  return{worklet:useW,set onChunk(f){cb=f;},stop(){cb=null;try{limiter.disconnect(split);}catch(e){}[split,merge,node,sink,...markers].forEach(n=>{try{n.disconnect();}catch(e){}});if(useW){try{node.port.postMessage('stop');}catch(e){}}}};}
+function Stream(){const L=[],R=[],Mk=[];let n=0;return{push(a,b,m){L.push(a);R.push(b);Mk.push(m);n+=a.length;},get length(){return n;},
+  find(from){let off=0;for(let c=0;c<Mk.length;c++){const m=Mk[c];if(off+m.length>from){for(let k=Math.max(0,from-off);k<m.length;k++)if(m[k]>.5)return off+k;}off+=m.length;}return -1;},
+  slice(arrs,s0,len){const out=new Float32Array(len);let off=0,w=0;for(const a of arrs){const e=off+a.length;if(e>s0&&w<len){const st=Math.max(0,s0-off),cnt=Math.min(a.length-st,len-w);out.set(a.subarray(st,st+cnt),w);w+=cnt;}off=e;if(w>=len)break;}return out;},
+  peak(s0,len){let pk=0,pi=s0,off=0;for(const a of L){for(let k=0;k<a.length;k++){const i=off+k;if(i>=s0&&i<s0+len){const v=Math.abs(a[k]);if(v>pk){pk=v;pi=i;}}}off+=a.length;}return pi;},L,R};}
+const oneShot=v=>{const b=ctx.createBuffer(1,1,ctx.sampleRate);b.getChannelData(0)[0]=v;const s=ctx.createBufferSource();s.buffer=b;return s;};
+// how late the master chain (tape wobble delay + compressor lookahead) makes a sound: one click through it, speakers muted. Call with the machine stopped.
+async function measureLatency(){initAudio();ctx.resume();const sr=ctx.sampleRate;try{analyser.disconnect(ctx.destination);}catch(e){}
+  const mark=oneShot(1),imp=oneShot(1);imp.connect(bus);let tap;
+  try{tap=await openTap([mark]);}catch(e){try{analyser.connect(ctx.destination);}catch(er){}throw{code:'no_tap'};}
+  const st=Stream(),T=ctx.currentTime+.15;mark.start(T);imp.start(T);
+  return new Promise((resolve,reject)=>{let done=false;const fin=(err,v)=>{if(done)return;done=true;clearTimeout(to);tap.stop();try{imp.disconnect();}catch(e){}try{analyser.connect(ctx.destination);}catch(e){}err?reject(err):resolve(v);};
+    const to=setTimeout(()=>fin({code:'timeout'}),5000);
+    tap.onChunk=(a,b,m)=>{st.push(a,b,m);const at=st.find(0);if(at>=0&&st.length>=at+Math.round(sr*.15))fin(null,(st.peak(at,Math.round(sr*.12))-at)/sr);};});}
 function captureBars(bars,opts={}){return new Promise((resolve,reject)=>{initAudio();ctx.resume();ensurePlaying();
-  setTimeout(()=>{const barDur=stepDur()*16;let start=state.lastBarT||ctx.currentTime,bar=state.bar||0,guard=0;while((start<ctx.currentTime+.08||(opts.ready&&!opts.ready(bar)))&&guard++<64){start+=barDur;bar++;}   // opts.ready: start only on a bar it accepts (the timeline waits for chord 1)
-    if(opts.onStart)opts.onStart(start,start+barDur*bars);const end=start+barDur*bars,sr=ctx.sampleRate,N=Math.ceil((end-start)*sr);
-    const L=new Float32Array(N),R=new Float32Array(N),sp=ctx.createScriptProcessor(4096,2,2),sink=ctx.createGain();sink.gain.value=0;let done=false;
-    const stopCap=()=>{done=true;try{limiter.disconnect(sp);}catch(e){}try{sp.disconnect();sink.disconnect();}catch(e){}};
-    sp.onaudioprocess=e=>{if(done)return;const t0=e.playbackTime,a=e.inputBuffer.getChannelData(0),b=e.inputBuffer.getChannelData(1),k0=Math.round((t0-start)*sr);
-      for(let i=0;i<a.length;i++){const k=k0+i;if(k>=0&&k<N){L[k]=a[i];R[k]=b[i];}}
-      if(t0>end+.05){stopCap();resolve({L,R,sr});}};
-    limiter.connect(sp);sp.connect(sink);sink.connect(ctx.destination);
-    setTimeout(()=>{if(!done){stopCap();reject({code:'timeout'});}},(end-ctx.currentTime+4)*1000);},state.playing?0:300);});}
+  loadRec().then(()=>setTimeout(async()=>{const barDur=stepDur()*16;let start=state.lastBarT||ctx.currentTime,bar=state.bar||0,guard=0;while((start<ctx.currentTime+.12||(opts.ready&&!opts.ready(bar)))&&guard++<64){start+=barDur;bar++;}   // opts.ready: start only on a bar it accepts (the timeline waits for chord 1)
+    if(opts.onStart)opts.onStart(start,start+barDur*bars);const end=start+barDur*bars,sr=ctx.sampleRate,N=Math.ceil((end-start)*sr),lat=Math.round((opts.latency||0)*sr);
+    const mark=oneShot(1),mark2=oneShot(1);let tap;try{tap=await openTap([mark,mark2]);}catch(e){reject({code:'no_tap'});return;}
+    mark.start(start);mark2.start(start+N/sr);   // downbeat marker + a second one exactly N samples later: places the take and proves nothing was dropped or repeated
+    captureBars.worklet=tap.worklet;const st=Stream();let done=false,late=false;LOOK=.6;schedLate=false;if(state.playing)schedule();
+    const kick=setInterval(()=>{if(state.playing)schedule();},20);
+    const fin=(err,v)=>{if(done)return;done=true;LOOK=.12;clearInterval(kick);clearTimeout(to);tap.stop();err?reject(err):resolve(v);};
+    const to=setTimeout(()=>fin({code:'timeout'}),(end-ctx.currentTime+6)*1000);
+    tap.onChunk=(a,b,m)=>{if(done)return;if(state.playing)schedule();if(schedLate&&ctx.currentTime<end+.05)late=true;schedLate=false;st.push(a,b,m);
+      const at=st.find(0);if(at<0)return;const at2=st.find(at+Math.round(N/2));if(at2<0||st.length<at+lat+N)return;
+      captureBars.lastLag=null;
+      if(late)return fin({code:'late_notes'});
+      if(Math.abs(at2-at-N)>1)return fin({code:'dropout',between:at2-at,want:N});
+      fin(null,{L:st.slice(st.L,at+lat,N),R:st.slice(st.R,at+lat,N),sr});};},state.playing?0:300));});}
 async function deliver(blob,name){
   if(window.claude&&typeof window.claude.use==='function'){let dl=null;try{dl=await window.claude.use('downloads');}catch(e){}
     if(dl){await dl.save({filename:name,data:blob});return;}}
@@ -2957,7 +2988,7 @@ function frame(now){if(curTheme==='aura')auraTick(now);else if(curTheme==='plasm
 /* ---------------- boot ---------------- */
 renderTracks();renderReadouts();renderPtn();renderSteps();renderLog();renderXY();renderBpm();loadLane(0);setTransport();renderGuide();renderAI();renderChords();setTimeout(loadStudio,300);renderSaved();   // boot() and the loop builder popup now run when POWER is pressed
 /* bridge for tl/view.js (the timeline): this whole script is private, so it hands the timeline what it needs. Live values are getters. */
-window.GSM={get ctx(){return ctx;},get limiter(){return limiter;},get analyser(){return analyser;},initAudio,captureBars,loopSnapshot,applySnapshot,deliver,midiBytes,FMT,state,patterns,params,src,studio,TRACKS,LANES,KEYS,play,stop,ensurePlaying,stepDur,curProg,keyIdx,NOTE12,SAVED,renderSaved,renderBpm,typeInto,gReply,lsGet,lsSet,setTheme,setCam};
+window.GSM={measureLatency,get recWorklet(){return captureBars.worklet;},get ctx(){return ctx;},get limiter(){return limiter;},get analyser(){return analyser;},initAudio,captureBars,loopSnapshot,applySnapshot,deliver,midiBytes,FMT,state,patterns,params,src,studio,TRACKS,LANES,KEYS,play,stop,ensurePlaying,stepDur,curProg,keyIdx,NOTE12,SAVED,renderSaved,renderBpm,typeInto,gReply,lsGet,lsSet,setTheme,setCam};
 requestAnimationFrame(frame);
 })();
 </script>

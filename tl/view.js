@@ -121,9 +121,15 @@
       if (M.state.playing) M.stop();
       if (recipe) M.applySnapshot(recipe);
       M.state.bpm = o.bpm * speed; M.renderBpm();
+      let latency = 0; try { latency = await M.measureLatency(); TL.lastLatencyErr = null; } catch (e) { TL.lastLatencyErr = e; }      // the chain's own delay, measured with this recipe's settings
+      TL.lastLatency = latency;
       if (o.silent) { M.analyser.disconnect(); gated = true; }
       const prog = M.curProg();
-      const cap = await M.captureBars(recBars, { ready: b => b % prog.length === 0, onStart: o.onStart });
+      let cap = null;
+      for (let tries = 0; !cap; tries++) {                 // a glitched take (dropped audio, late notes, lost marker) is thrown away and re-recorded
+        try { cap = await M.captureBars(recBars, { ready: b => b % prog.length === 0, onStart: o.onStart, latency }); }
+        catch (e) { const c = e && e.code; if (!['dropout', 'late_notes', 'misaligned'].includes(c) || tries >= 2) throw (c === 'timeout' ? e : { code: c === 'timeout' ? 'timeout' : 'glitched' }); TL.say('THAT TAKE GLITCHED · RECORDING AGAIN…'); }
+      }
       const buf = ctx.createBuffer(2, cap.L.length, cap.sr); buf.copyToChannel(cap.L, 0); buf.copyToChannel(cap.R, 1);
       return { buf, recBars };
     } finally {
@@ -157,8 +163,8 @@
         TL.render(); TL.changed();
         return clip;
       } catch (e) {
-        const c = e && e.code; TL.lastMsg = c === 'timeout' ? 'RECORDING STALLED' : c === 'full' ? 'TIMELINE FULL' : 'RECORDING FAILED';
-        TL.say(TL.lastMsg + (c === 'timeout' ? ' · KEEP THIS TAB IN FRONT AND TRY AGAIN' : '')); M.typeInto(M.gReply, '> ' + TL.lastMsg);
+        const c = e && e.code; TL.lastMsg = c === 'timeout' ? 'RECORDING STALLED' : c === 'glitched' ? 'RECORDING GLITCHED' : c === 'full' ? 'TIMELINE FULL' : 'RECORDING FAILED';
+        TL.say(TL.lastMsg + (c === 'timeout' || c === 'glitched' ? ' · KEEP THIS TAB IN FRONT WHILE IT RECORDS, THEN TRY AGAIN' : '')); M.typeInto(M.gReply, '> ' + TL.lastMsg);
         throw e;
       } finally { clearInterval(tick); busy = false; btn.classList.remove('on'); btn.textContent = label; }
     })();
@@ -302,27 +308,28 @@
     TL.bus.connect(comp); comp.connect(ctx.destination);
     TL.chNodes = Array.from({ length: CH }, (_, i) => { const g = ctx.createGain(); g.gain.value = TL.chGain(i); g.connect(TL.bus); return g; });
   }
-  let srcs = [], t0 = 0, b0 = 0, cycleEnd = 0, timer = null;
+  let srcs = [], t0 = 0, b0 = 0, cycleEnd = 0, timer = null, starts = [];   // starts: when each pass begins {t, b}
   function scheduleFrom(fromBar, when) {          // schedules [fromBar, songEnd) starting at `when`; returns the end time
     const bs = barSec(), end = G.songEnd(TL.state.clips);
     for (const c of TL.state.clips) {
       const buf = TL.audio.get(c.audioId), cEnd = c.start + c.len; if (!buf || cEnd <= fromBar) continue;
-      const from = Math.max(fromBar, c.start), at = when + (from - fromBar) * bs, off = ((from - c.start) * bs) % buf.duration;
-      const s = M.ctx.createBufferSource(); s.buffer = buf; s.loop = true; s.loopStart = 0; s.loopEnd = buf.duration;
+      const per = Math.min(buf.duration, G.clipBars(c.recBars, c.speed) * bs);     // loop on the exact musical length, not the sample-rounded buffer length
+      const from = Math.max(fromBar, c.start), at = when + (from - fromBar) * bs, off = ((from - c.start) * bs) % per;
+      const s = M.ctx.createBufferSource(); s.buffer = buf; s.loop = true; s.loopStart = 0; s.loopEnd = per;
       s.connect(TL.chNodes[c.ch]); s.start(at, off); s.stop(when + (cEnd - fromBar) * bs);
-      srcs.push(s); TL.debug.scheduled.push({ id: c.id, when: at, offset: off, dur: (cEnd - from) * bs });
+      srcs.push(s); TL.debug.scheduled.push({ id: c.id, when: at, offset: off, dur: (cEnd - from) * bs, loopLen: per });
     }
     return when + Math.max(0, end - fromBar) * bs;
   }
   function stopSources() { for (const s of srcs) { try { s.stop(); } catch (e) {} try { s.disconnect(); } catch (e) {} } srcs = []; }
-  TL.pos = () => TL.playing ? b0 + (M.ctx.currentTime - t0) / barSec() : TL.state.startBar;
+  TL.pos = () => { if (!TL.playing) return TL.state.startBar; const now = M.ctx.currentTime; let p = starts[0]; for (const s of starts) if (s.t <= now) p = s; return p.b + (now - p.t) / barSec(); };
   TL.play = (fromBar) => {
     if (!TL.state.clips.length) { TL.say('NOTHING TO PLAY YET · SEND A LOOP FIRST'); return; }
     M.initAudio(); M.ctx.resume(); if (M.state.playing) M.stop();
     if (TL.playing) { stopSources(); clearInterval(timer); }
     ensureNodes(); TL.applyGains(); TL.debug.scheduled = [];
     b0 = fromBar === undefined ? TL.state.startBar : Math.max(0, fromBar); if (b0 >= G.songEnd(TL.state.clips)) b0 = 0;
-    t0 = M.ctx.currentTime + .06; cycleEnd = scheduleFrom(b0, t0); TL.playing = true;
+    t0 = M.ctx.currentTime + .06; starts = [{ t: t0, b: b0 }]; cycleEnd = scheduleFrom(b0, t0); TL.playing = true;
     $('tlPlay').classList.add('on');
     timer = setInterval(tick, 40);
   };
@@ -332,8 +339,8 @@
   };
   function tick() {
     const now = M.ctx.currentTime;
-    if (now > cycleEnd - .25) {
-      if (TL.state.loop && G.songEnd(TL.state.clips) > 0) { const st = cycleEnd; t0 = st; b0 = 0; cycleEnd = scheduleFrom(0, st); }
+    if (now > cycleEnd - 2) {        // queue the next pass 2 s early: background tabs slow this timer to about once a second
+      if (TL.state.loop && G.songEnd(TL.state.clips) > 0) { const st = cycleEnd; starts.push({ t: st, b: 0 }); if (starts.length > 8) starts.shift(); cycleEnd = scheduleFrom(0, st); }
       else if (now >= cycleEnd) { TL.stop(); TL.state.startBar = 0; paintHead(); return; }
     }
     paintHead();
@@ -418,7 +425,7 @@
     for (const c of TL.state.clips) {
       if (!chans.includes(c.ch)) continue; const buf = TL.audio.get(c.audioId); if (!buf) continue;
       const g = oc.createGain(); g.gain.value = TL.chGain(c.ch); g.connect(oc.destination);
-      const s = oc.createBufferSource(); s.buffer = buf; s.loop = true; s.loopEnd = buf.duration; s.connect(g); s.start(c.start * bs); s.stop((c.start + c.len) * bs);
+      const s = oc.createBufferSource(); s.buffer = buf; s.loop = true; s.loopEnd = Math.min(buf.duration, G.clipBars(c.recBars, c.speed) * bs); s.connect(g); s.start(c.start * bs); s.stop((c.start + c.len) * bs);
     }
     return oc.startRendering();
   }
