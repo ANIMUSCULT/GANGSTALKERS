@@ -599,24 +599,24 @@ html.calm .introart .ia-fx{display:none}
 .tracks{gap:3px}
 .trk{row-gap:4px;padding:2px 4px 3px}
 .trk .ms{height:24px}
-.trk .fad{grid-column:1/3;position:relative;height:16px;border-radius:8px;cursor:ew-resize;touch-action:none;outline:none;
+:is(.trk,.tlrow) .fad{grid-column:1/3;position:relative;height:16px;border-radius:8px;cursor:ew-resize;touch-action:none;outline:none;
   background:linear-gradient(180deg,#040202,#140d0c);box-shadow:inset 0 2px 4px #000,inset 0 0 0 1px rgba(255,255,255,.07),0 1px 0 rgba(255,255,255,.06)}
-.trk .fad .meter{position:absolute;left:8px;right:8px;top:5px;height:6px;margin:0}
-.trk .fad .ffill{position:absolute;left:3px;top:3px;bottom:3px;width:calc(var(--v,.8)*(100% - 6px));border-radius:6px;pointer-events:none;
+:is(.trk,.tlrow) .fad .meter{position:absolute;left:8px;right:8px;top:5px;height:6px;margin:0}
+:is(.trk,.tlrow) .fad .ffill{position:absolute;left:3px;top:3px;bottom:3px;width:calc(var(--v,.8)*(100% - 6px));border-radius:6px;pointer-events:none;
   background:linear-gradient(90deg,rgba(var(--acc),.04),rgba(var(--acc),.3));box-shadow:inset 0 0 0 1px rgba(var(--acc),.28)}
-.trk .fad .funity{position:absolute;left:calc(3px + .8*(100% - 6px));top:2px;bottom:2px;width:1px;background:rgba(255,255,255,.28);pointer-events:none}
-.trk .fad .fthumb{position:absolute;top:-4px;left:calc(3px + var(--v,.8)*(100% - 6px));width:14px;height:24px;margin-left:-7px;border-radius:7px;pointer-events:none;border:1.5px solid transparent;
+:is(.trk,.tlrow) .fad .funity{position:absolute;left:calc(3px + .8*(100% - 6px));top:2px;bottom:2px;width:1px;background:rgba(255,255,255,.28);pointer-events:none}
+:is(.trk,.tlrow) .fad .fthumb{position:absolute;top:-4px;left:calc(3px + var(--v,.8)*(100% - 6px));width:14px;height:24px;margin-left:-7px;border-radius:7px;pointer-events:none;border:1.5px solid transparent;
   background:var(--gloss) padding-box,var(--gel-off) padding-box,var(--chrome) border-box;box-shadow:0 0 0 1px var(--seat),0 3px 5px var(--drop);transition:transform .12s,box-shadow .2s}
-.trk .fad .fthumb::after{content:"";position:absolute;left:50%;top:5px;bottom:5px;width:2px;margin-left:-1px;border-radius:1px;background:var(--flame);box-shadow:0 0 6px var(--flame)}
-.trk .fad:hover .fthumb,.trk .fad:focus-visible .fthumb{transform:scale(1.12)}
-.trk .fad.drag .fthumb{transform:scale(1.2);background:var(--gloss) padding-box,var(--gel-on) padding-box,var(--chrome) border-box;box-shadow:0 0 0 1px var(--seat),0 0 14px rgba(var(--acc),.75)}
-.trk .fad.drag .fthumb::after{background:#fff;box-shadow:0 0 6px #fff}
-.trk .fad:focus-visible{box-shadow:inset 0 2px 4px #000,0 0 0 2px var(--hot)}
-.trk .fv{grid-column:3/5;height:18px;padding:0 6px;border-radius:4px;font-family:var(--f-osd);font-size:16px;line-height:18px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--flame);
+:is(.trk,.tlrow) .fad .fthumb::after{content:"";position:absolute;left:50%;top:5px;bottom:5px;width:2px;margin-left:-1px;border-radius:1px;background:var(--flame);box-shadow:0 0 6px var(--flame)}
+:is(.trk,.tlrow) .fad:hover .fthumb,:is(.trk,.tlrow) .fad:focus-visible .fthumb{transform:scale(1.12)}
+:is(.trk,.tlrow) .fad.drag .fthumb{transform:scale(1.2);background:var(--gloss) padding-box,var(--gel-on) padding-box,var(--chrome) border-box;box-shadow:0 0 0 1px var(--seat),0 0 14px rgba(var(--acc),.75)}
+:is(.trk,.tlrow) .fad.drag .fthumb::after{background:#fff;box-shadow:0 0 6px #fff}
+:is(.trk,.tlrow) .fad:focus-visible{box-shadow:inset 0 2px 4px #000,0 0 0 2px var(--hot)}
+:is(.trk,.tlrow) .fv{grid-column:3/5;height:18px;padding:0 6px;border-radius:4px;font-family:var(--f-osd);font-size:16px;line-height:18px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--flame);
   background:rgba(0,0,0,.55);box-shadow:inset 0 1px 3px #000,inset 0 0 0 1px rgba(var(--acc),.18);text-shadow:0 0 6px rgba(var(--acc),.6);transition:color .2s}
-.trk .fv.hot{color:var(--acc-hi)}
-.trk .fad.drag+.fv{color:#fff;text-shadow:0 0 8px var(--flame)}
-.trk .fv.unity{animation:unity .45s ease-out}
+:is(.trk,.tlrow) .fv.hot{color:var(--acc-hi)}
+:is(.trk,.tlrow) .fad.drag+.fv{color:#fff;text-shadow:0 0 8px var(--flame)}
+:is(.trk,.tlrow) .fv.unity{animation:unity .45s ease-out}
 @keyframes unity{0%{background:rgba(var(--acc),.55);color:#fff}100%{background:rgba(0,0,0,.55)}}
 .trk.muted .fad{opacity:.45}
 html.lightbody .trk .fad{background:linear-gradient(180deg,#d9d4d0,#f3f0ed);box-shadow:inset 0 2px 4px rgba(0,0,0,.25),inset 0 0 0 1px rgba(0,0,0,.08)}
@@ -1065,12 +1065,13 @@ html[data-theme="plasma"] .screenwrap{background:linear-gradient(180deg,rgba(255
 html.midilearn .knob,html.midilearn .trk .fad{outline:1.5px dashed rgba(var(--acc),.75);outline-offset:4px;cursor:crosshair}
 .knob.learning,.trk .fad.learning{outline:2px solid var(--hot)!important;outline-offset:4px;filter:drop-shadow(0 0 10px rgba(var(--acc),.8))}
 .knob.mapped .kl::after,.trk .fad.mapped::after{content:"";display:inline-block;width:5px;height:5px;margin-left:5px;border-radius:50%;vertical-align:2px;background:var(--hot);box-shadow:0 0 5px var(--flame)}
-.trk .fad.mapped::after{position:absolute;right:-2px;top:-4px;margin:0}
+:is(.trk,.tlrow) .fad.mapped::after{position:absolute;right:-2px;top:-4px;margin:0}
 .savebar{display:flex;align-items:center;gap:12px;padding:2px 0 4px}
 .savebar .key{height:32px;padding:0 16px;font-size:16px}
 .savehint{font-size:14px;letter-spacing:.06em;color:var(--bone-dim)}
-.savedrow{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:stretch}
-.savedx{height:auto;align-self:stretch;padding:0 9px;font-size:14px}
+.savedrow{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:stretch}
+.savedx,.savedtl{height:auto;align-self:stretch;padding:0 9px;font-size:14px}
+.savedtl:hover{color:var(--bone);box-shadow:inset 0 0 0 1px var(--flame)}
 .savedx:hover{color:var(--hot);box-shadow:inset 0 0 0 1px var(--hot)}
 html.eco .tower canvas,html.eco .scope{visibility:hidden}
 @media (max-width:760px){.top{position:relative;top:auto;left:auto;right:auto}.midiwrap{position:static}.lookpanel.midipanel{left:0;top:calc(100% + 8px);width:min(440px,calc(100vw - 36px))}}
@@ -1087,6 +1088,74 @@ html.eco .tower canvas,html.eco .scope{visibility:hidden}
 .bubhint{position:absolute;z-index:11;left:50%;bottom:20px;translate:-50% 0;padding:2px 10px;border-radius:999px;background:rgba(0,0,0,.45);font-size:13px;letter-spacing:.16em;color:rgba(235,229,217,.75);white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none}
 .screenwrap.bubble .bubhint{opacity:1}
 html.calm .screenwrap,html.calm .screenwrap.bubble{transition:none}
+
+/* ================= TIMELINE: arrange recorded loops into a song (tl/view.js) ================= */
+.tlview{position:absolute;inset:0;z-index:70;border-radius:22px;overflow:hidden;display:flex;flex-direction:column;gap:8px;padding:14px 18px 16px;font-family:var(--f-osd);color:var(--bone);
+  background:linear-gradient(180deg,rgba(var(--srgb1),.97),rgba(var(--srgb2),.985));box-shadow:inset 0 0 0 1px rgba(var(--acc),.25),inset 0 1px 0 rgba(255,255,255,.08)}
+.tlview[hidden]{display:none!important}
+.tlhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:42px}
+.tlhead .key{height:34px;padding:0 14px;font-size:17px;white-space:nowrap}
+.tlhead .tlttl{font-family:var(--f-serif);font-weight:700;font-size:26px;letter-spacing:.12em;color:var(--flame);text-shadow:0 0 12px rgba(var(--acc),.55);margin-right:6px}
+.tlhead .lcd{font-size:20px;padding:3px 10px 2px}
+.tlhead .grow{flex:1}
+.tlmsg{min-height:22px;font-size:18px;color:var(--flame);text-shadow:0 0 6px rgba(var(--acc),.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tlbody{flex:1;min-height:0;display:grid;grid-template-columns:232px 1fr;gap:0 8px}
+.tlstrips{display:flex;flex-direction:column;padding-top:28px}
+.tlrow{height:44px;display:grid;grid-template-columns:44px 1fr 30px 30px;grid-template-rows:20px 18px;gap:2px 5px;align-items:center;padding:2px 6px;border-radius:5px;
+  border-bottom:1px solid rgba(255,255,255,.04)}
+.tlrow .tlch{font-size:15px;color:var(--bone-dim)}
+.tlrow .tlname{font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tlrow .ms{width:30px;height:20px;font-size:15px}
+.tlrow .fad{grid-column:1/3;height:14px}
+.tlrow .fad .fthumb{top:-5px;height:22px}
+.tlrow .fv{grid-column:3/5;font-size:14px;height:16px;line-height:16px;padding:0 4px}
+.tlrow.off .tlname{color:var(--bone-faint);text-decoration:line-through}
+.tlgrid{position:relative;overflow-x:auto;overflow-y:hidden;border-radius:8px;background:rgba(0,0,0,.35);box-shadow:inset 0 0 0 1px rgba(var(--acc),.18),inset 0 4px 14px #000;scrollbar-color:rgba(var(--acc),.5) transparent}
+.tlinner{position:relative;width:calc(var(--bar)*64);min-height:100%}
+.tlruler{position:sticky;top:0;height:28px;display:grid;grid-template-columns:repeat(64,var(--bar));z-index:3;background:rgba(var(--srgb2),.92);box-shadow:0 1px 0 rgba(var(--acc),.25);cursor:pointer}
+.tlbar{font-size:15px;color:var(--bone-dim);padding:5px 0 0 5px;border-left:1px solid rgba(var(--acc),.28);font-variant-numeric:tabular-nums}
+.tlbar:nth-child(4n+1){color:var(--flame)}
+.tllanes{position:relative}
+.tllane{position:relative;height:44px;border-bottom:1px solid rgba(255,255,255,.04);
+  background-image:repeating-linear-gradient(90deg,rgba(var(--acc),.22) 0 1px,transparent 1px var(--bar)),repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,transparent 1px calc(var(--bar)/4))}
+.tllane:nth-child(odd){background-color:rgba(255,255,255,.012)}
+.tlhead-ph{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--white-led);box-shadow:0 0 10px var(--flame),0 0 2px #fff;pointer-events:none;z-index:4;left:calc(var(--ph,0)*var(--bar))}
+.tlclip{position:absolute;top:3px;height:38px;border-radius:6px;overflow:hidden;cursor:grab;touch-action:none;user-select:none;z-index:2;
+  background:linear-gradient(180deg,rgba(var(--acc),.32),rgba(var(--acc),.14));box-shadow:inset 0 0 0 1px rgba(var(--acc),.7),inset 0 1px 0 rgba(255,255,255,.18),0 2px 6px rgba(0,0,0,.6)}
+.tlclip.sel{box-shadow:inset 0 0 0 2px var(--white-led),0 0 14px rgba(var(--acc),.55)}
+.tlclip.drag{opacity:.85;z-index:5;cursor:grabbing;transition:none}
+.tlclip .tlwave{position:absolute;left:0;top:0;height:38px;pointer-events:none}
+.tlclip .tlcname{position:absolute;left:7px;top:3px;right:40px;font-size:15px;line-height:1;letter-spacing:.04em;color:var(--on-ink);text-shadow:0 1px 2px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.tlclip .tlcspd{position:absolute;left:7px;bottom:3px;font-size:13px;color:var(--white-led);pointer-events:none}
+.tlclip .tlmore{position:absolute;right:12px;top:3px;width:22px;height:18px;border-radius:4px;font-size:15px;line-height:16px;color:var(--bone);background:rgba(0,0,0,.45)}
+.tlclip .tlgrip{position:absolute;right:0;top:0;bottom:0;width:9px;cursor:ew-resize;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18))}
+.tlmenu{position:absolute;z-index:20;min-width:176px;display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:9px;
+  background:rgba(var(--srgb2),.97);box-shadow:inset 0 0 0 1px rgba(var(--acc),.45),0 12px 30px rgba(0,0,0,.8)}
+.tlmenu[hidden]{display:none!important}
+.tlmenu button{height:30px;padding:0 10px;border-radius:5px;text-align:left;font-size:17px;letter-spacing:.06em;color:var(--bone)}
+.tlmenu button:hover,.tlmenu button:focus-visible{background:rgba(var(--acc),.22)}
+.tlmenu .tlspd{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.tlmenu .tlspd button{text-align:center;box-shadow:inset 0 0 0 1px rgba(var(--acc),.35)}
+.tlmenu .tlspd button.on{color:var(--on-ink);background:var(--flame)}
+.tlask{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);z-index:30;width:min(520px,92%);display:flex;flex-direction:column;gap:12px;padding:18px 20px;border-radius:12px;
+  background:rgba(var(--srgb2),.98);box-shadow:inset 0 0 0 1px var(--flame),0 0 40px rgba(var(--acc),.35),0 20px 50px rgba(0,0,0,.85)}
+.tlask[hidden]{display:none!important}
+.tlask p{margin:0;font-size:21px;line-height:1.25;color:var(--bone)}
+.tlask input{height:38px;border:0;border-radius:6px;padding:0 12px;font-family:var(--f-led);font-weight:900;font-size:24px;color:var(--flame);background:var(--sur-4);box-shadow:inset 0 2px 6px #000,inset 0 0 0 1px rgba(var(--acc),.4)}
+.tlaskrow{display:flex;gap:10px;justify-content:flex-end}.tlaskrow .key{height:36px;padding:0 16px;font-size:18px}
+.tlprog{height:6px;border-radius:3px;background:rgba(var(--acc),.15);overflow:hidden}.tlprog i{display:block;height:100%;width:0;background:var(--flame);box-shadow:0 0 10px var(--flame);transition:width .3s}
+#tlBpmBox{cursor:pointer}
+/* room for TIMELINE + SEND: the decorative timecode steps aside when KEEP/BURN show (desktop) */
+@media (min-width:761px){.top:has(#rateLoop:not([hidden])) .tcbox{display:none}}
+@media (max-width:760px){.tlempty{left:8px;width:calc(100vw - 190px);max-width:none;font-size:16px}}
+.tlempty{position:absolute;left:24px;top:60px;max-width:520px;font-size:20px;line-height:1.3;color:var(--bone-dim);pointer-events:none}
+.tlempty b{color:var(--flame);font-weight:400}
+@media (max-width:760px){
+  .tlview{position:fixed;inset:0;z-index:90;border-radius:0;padding:10px 8px calc(12px + env(safe-area-inset-bottom,0px));overflow:auto}
+  .tlhead .key{height:32px;padding:0 10px;font-size:15px}.tlhead .tlttl{font-size:20px}
+  .tlbody{grid-template-columns:150px 1fr}
+  .tlrow{grid-template-columns:34px 1fr 26px 26px}.tlrow .ms{width:26px}
+}
 </style>
 </head>
 <body>
@@ -1105,6 +1174,8 @@ html.calm .screenwrap,html.calm .screenwrap.bubble{transition:none}
     <div class="osd chlbl" style="color:var(--bone-dim)">CH 01 · <span id="chName">THE WALL</span></div>
     <button class="key newloop" id="obOpen" title="Open the loop builder">＋ NEW LOOP</button>
     <button class="key newloop" id="btnExport" title="Bounce 4 bars to WAV + MIDI (drums, 808, chords) for your DAW">⤓ EXPORT</button>
+    <button class="key newloop" id="btnTimeline" title="Open the song timeline: arrange your loops into a song">▤ TIMELINE</button>
+    <button class="key newloop" id="btnSend" title="Record this loop (one full 4-bar cycle, starting on chord 1) onto the timeline at the song tempo">→ SEND</button>
     <div class="midiwrap">
       <button class="key newloop" id="midiBtn" aria-expanded="false" aria-controls="midiPanel" title="Play it from a pad controller or keyboard, map your knobs, follow your DAW's tempo"><i class="mdot" id="midiDot"></i>MIDI</button>
       <div class="lookpanel midipanel" id="midiPanel" hidden role="dialog" aria-label="MIDI">
@@ -1124,7 +1195,7 @@ html.calm .screenwrap,html.calm .screenwrap.bubble{transition:none}
     <div class="lcd" id="lcdBpm" title="Drag up or down to change tempo"><span class="lbl">BPM</span><span id="bpmVal">122</span><i class="beatdot" id="beatDot"></i></div>
     <div class="lcd"><span class="lbl">PTN</span><span id="ptnVal">A</span></div>
     <div class="lcd"><span class="lbl">LANE</span><span id="laneVal">HYPN</span></div>
-    <div class="lcd"><span class="lbl">TC</span><span id="tcVal">00:00:00</span></div>
+    <div class="lcd tcbox"><span class="lbl">TC</span><span id="tcVal">00:00:00</span></div>
   </div>
 
   <div class="main">
@@ -1272,7 +1343,7 @@ html.calm .screenwrap,html.calm .screenwrap.bubble{transition:none}
   </div>
   <div class="powerhint" id="powerHint" hidden>CLICK TO SKIP</div>
  </div>
-</div></div>
+<section id="tlView" class="tlview" hidden aria-label="Song timeline"></section></div></div>
 
 <div class="ob" id="ob" hidden role="dialog" aria-modal="true" aria-labelledby="obTitle">
  <div class="obcard">
@@ -1291,6 +1362,7 @@ html.calm .screenwrap,html.calm .screenwrap.bubble{transition:none}
   <span><b>FIRST LOOP</b> tab: build a loop step by step, or describe the whole thing</span><span><b>MAKE IT REAL</b> / <b>SOURCE</b>: swap a synth voice for a studio take or a hit from your own tracks (◆)</span><span><b>SPACE</b> play / stop</span><span><b>M</b> / <b>S</b> mute / solo the selected track · <b>SHIFT+M</b> mute all</span><span><b>F</b> fill</span><span><b>1–8</b> hit a track (writes a step while REC is on)</span><span><b>SHIFT-CLICK</b> a step for a ×2 / ×3 roll · <b>ALT-CLICK</b> for an accent</span><span><b>DRAG</b> knobs up/down · <b>DOUBLE-CLICK</b> reset</span><span>Centre art is a placeholder</span>
 </div>
 
+<script src="tl/core.js"></script>
 <script>
 (()=>{
 "use strict";
@@ -1593,7 +1665,7 @@ function schedule(){
     nextT+=stepDur();schedStep=(schedStep+1)%16;
   }
 }
-function play(){initAudio();ctx.resume();if(state.playing)return;state.playing=true;schedStep=0;nextT=ctx.currentTime+.06;state.startT=nextT;
+function play(){initAudio();ctx.resume();if(window.TL&&TL.playing)TL.stop();if(state.playing)return;state.playing=true;schedStep=0;nextT=ctx.currentTime+.06;state.startT=nextT;
   timer=setInterval(schedule,25);schedule();setTransport();}
 function stop(){state.playing=false;clearInterval(timer);uiQueue.length=0;state.step=-1;state.fillArmed=false;state.fillBar=false;setTransport();renderSteps();renderLog();}
 
@@ -2247,7 +2319,9 @@ function renderSaved(){const el=document.getElementById('savedFiles');el.innerHT
     const x=document.createElement('button');x.className='tiny savedx';x.textContent='✕';x.title='Delete this saved loop';x.setAttribute('aria-label','Delete '+(L.name||'loop'));
     x.addEventListener('click',async()=>{if(L._id&&taste.db){try{await taste.db.collection('saved').doc(L._id).delete();}catch(e){typeInto(gReply,'> COULD NOT DELETE THAT LOOP');}return;}
       const j=SAVED.indexOf(L);if(j>=0)SAVED.splice(j,1);lsSet('gs-saved',JSON.stringify(SAVED.filter(v=>!v._id)));renderSaved();typeInto(gReply,'> DELETED: '+(L.name||'LOOP'));});
-    row.append(b,x);
+    const tl=document.createElement('button');tl.className='tiny savedtl';tl.textContent='→ TL';tl.title='Record this loop onto the timeline';tl.setAttribute('aria-label','Send '+(L.name||'loop')+' to the timeline');
+    tl.addEventListener('click',()=>{if(window.TL)TL.send(L);});
+    row.append(b,tl,x);
     b.querySelector('.fn').textContent='♥ '+(L.name||'LOOP');b.querySelector('.meta').textContent=(L.bpm||'?')+' BPM';b.querySelector('.tags').textContent=(L.lane||'')+(L.words?' · '+L.words:'');
     b.addEventListener('click',()=>{applySnapshot(L);ensurePlaying();typeInto(gReply,'> LOADED: '+(L.name||'LOOP'));});el.appendChild(row);});}
 document.getElementById('saveNow').addEventListener('click',e=>{pop(e.currentTarget);saveLoop();});
@@ -2363,20 +2437,7 @@ document.getElementById('chPrompt').addEventListener('keydown',e=>{if(e.key==='E
 new MutationObserver(()=>{if(currentView==='chords'&&gReply.textContent)chReply.textContent=gReply.textContent;}).observe(gReply,{childList:true,characterData:true,subtree:true});
 
 /* ---------------- EXPORT: bounce 4 bars to WAV + a MIDI file (drums, 808, chords), zipped for your DAW ---------------- */
-const CRC_T=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
-function crc32(u){let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRC_T[(c^u[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
-function makeZip(files){const enc=new TextEncoder(),u16=v=>[v&255,(v>>8)&255],u32=v=>[v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255],parts=[],cent=[];let off=0;
-  for(const f of files){const nm=enc.encode(f.name),crc=crc32(f.data),sz=f.data.length;
-    const lh=new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0x21),...u32(crc),...u32(sz),...u32(sz),...u16(nm.length),...u16(0)]);
-    parts.push(lh,nm,f.data);
-    cent.push(new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0x21),...u32(crc),...u32(sz),...u32(sz),...u16(nm.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(off)]),nm);
-    off+=lh.length+nm.length+sz;}
-  const cd=cent.reduce((a,b)=>a+b.length,0);
-  return new Blob([...parts,...cent,new Uint8Array([...u32(0x06054b50),...u16(0),...u16(0),...u16(files.length),...u16(files.length),...u32(cd),...u32(off),...u16(0)])],{type:'application/zip'});}
-function wavBytes(L,R,sr){const n=L.length,b=new ArrayBuffer(44+n*4),v=new DataView(b),w=(o,t)=>{for(let i=0;i<t.length;i++)v.setUint8(o+i,t.charCodeAt(i));};
-  w(0,'RIFF');v.setUint32(4,36+n*4,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,2,true);v.setUint32(24,sr,true);v.setUint32(28,sr*4,true);
-  v.setUint16(32,4,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*4,true);
-  for(let i=0,o=44;i<n;i++,o+=4){v.setInt16(o,Math.max(-1,Math.min(1,L[i]))*32767,true);v.setInt16(o+2,Math.max(-1,Math.min(1,R[i]))*32767,true);}return new Uint8Array(b);}
+/* crc32, makeZip and wavBytes now live in tl/core.js (shared with the timeline) */
 function midiBytes(bars){const PPQ=96,stepT=PPQ/4,pt=patterns[state.ptn],vlq=n=>{const b=[n&127];while(n>>=7)b.unshift((n&127)|128);return b;};
   const track=(ev,name)=>{ev.sort((a,b)=>a.t-b.t||a.o-b.o);let last=0;const d=[0,0xFF,0x03,...vlq(name.length),...[...name].map(c=>c.charCodeAt(0)&127)];
     for(const e of ev){d.push(...vlq(e.t-last),...e.b);last=e.t;}d.push(0,0xFF,0x2F,0);return [0x4D,0x54,0x72,0x6B,(d.length>>>24)&255,(d.length>>16)&255,(d.length>>8)&255,d.length&255,...d];};
@@ -2395,8 +2456,9 @@ function midiBytes(bars){const PPQ=96,stepT=PPQ/4,pt=patterns[state.ptn],vlq=n=>
   return new Uint8Array([0x4D,0x54,0x68,0x64,0,0,0,6,0,1,0,4,0,PPQ,
     ...track([{t:0,o:0,b:[0xFF,0x51,0x03,(tempo>>16)&255,(tempo>>8)&255,tempo&255]},{t:0,o:0,b:[0xFF,0x58,0x04,4,2,24,8]}],'GANGSTALKERS'),
     ...track(drums,'DRUMS'),...track(bass,'808'),...track(chords,'CHORDS')]);}
-function captureBars(bars){return new Promise((resolve,reject)=>{initAudio();ctx.resume();ensurePlaying();
-  setTimeout(()=>{const barDur=stepDur()*16;let start=state.lastBarT||ctx.currentTime;while(start<ctx.currentTime+.08)start+=barDur;const end=start+barDur*bars,sr=ctx.sampleRate,N=Math.ceil((end-start)*sr);
+function captureBars(bars,opts={}){return new Promise((resolve,reject)=>{initAudio();ctx.resume();ensurePlaying();
+  setTimeout(()=>{const barDur=stepDur()*16;let start=state.lastBarT||ctx.currentTime,bar=state.bar||0,guard=0;while((start<ctx.currentTime+.08||(opts.ready&&!opts.ready(bar)))&&guard++<64){start+=barDur;bar++;}   // opts.ready: start only on a bar it accepts (the timeline waits for chord 1)
+    if(opts.onStart)opts.onStart(start,start+barDur*bars);const end=start+barDur*bars,sr=ctx.sampleRate,N=Math.ceil((end-start)*sr);
     const L=new Float32Array(N),R=new Float32Array(N),sp=ctx.createScriptProcessor(4096,2,2),sink=ctx.createGain();sink.gain.value=0;let done=false;
     const stopCap=()=>{done=true;try{limiter.disconnect(sp);}catch(e){}try{sp.disconnect();sink.disconnect();}catch(e){}};
     sp.onaudioprocess=e=>{if(done)return;const t0=e.playbackTime,a=e.inputBuffer.getChannelData(0),b=e.inputBuffer.getChannelData(1),k0=Math.round((t0-start)*sr);
@@ -2894,9 +2956,12 @@ function frame(now){if(curTheme==='aura')auraTick(now);else if(curTheme==='plasm
 
 /* ---------------- boot ---------------- */
 renderTracks();renderReadouts();renderPtn();renderSteps();renderLog();renderXY();renderBpm();loadLane(0);setTransport();renderGuide();renderAI();renderChords();setTimeout(loadStudio,300);renderSaved();   // boot() and the loop builder popup now run when POWER is pressed
+/* bridge for tl/view.js (the timeline): this whole script is private, so it hands the timeline what it needs. Live values are getters. */
+window.GSM={get ctx(){return ctx;},get limiter(){return limiter;},get analyser(){return analyser;},initAudio,captureBars,loopSnapshot,applySnapshot,deliver,midiBytes,FMT,state,patterns,params,src,studio,TRACKS,LANES,KEYS,play,stop,ensurePlaying,stepDur,curProg,keyIdx,NOTE12,SAVED,renderSaved,renderBpm,typeInto,gReply,lsGet,lsSet,setTheme,setCam};
 requestAnimationFrame(frame);
 })();
 </script>
+<script src="tl/view.js"></script>
 
 </body>
 </html>
