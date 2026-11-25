@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=VT323&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: a fixed 1600×900 machine (like a plugin window) scaled to fit. Four LED towers frame a central touchscreen; track list left, profile right; a heavy metal knob deck and backlit keys below. ANIMUSCULT house look: VHS black, flame red, bone. */
 :root{
@@ -1146,7 +1147,7 @@ html.calm .screenwrap,html.calm .screenwrap.bubble{transition:none}
 .tlprog{height:6px;border-radius:3px;background:rgba(var(--acc),.15);overflow:hidden}.tlprog i{display:block;height:100%;width:0;background:var(--flame);box-shadow:0 0 10px var(--flame);transition:width .3s}
 #tlBpmBox{cursor:pointer}
 /* room for TIMELINE + SEND: the decorative timecode steps aside when KEEP/BURN show (desktop) */
-@media (min-width:761px){.top:has(#rateLoop:not([hidden])) .tcbox{display:none}}
+@media (min-width:761px){.top .tcbox{display:none}.top{gap:8px}.top:has(#rateLoop:not([hidden])) #topState{display:none}}
 @media (max-width:760px){.tlempty{left:8px;width:calc(100vw - 190px);max-width:none;font-size:16px}}
 .tlempty{position:absolute;left:24px;top:60px;max-width:520px;font-size:20px;line-height:1.3;color:var(--bone-dim);pointer-events:none}
 .tlempty b{color:var(--flame);font-weight:400}
@@ -1172,6 +1173,7 @@ html.calm .screenwrap,html.calm .screenwrap.bubble{transition:none}
     <div class="brand">GANGSTALKERS<small>BY ANIMUSCULT · RHYTHM SURVEILLANCE UNIT</small></div>
     <div class="osd" id="topState"><span class="recdot" id="recDot"></span><span id="playWord">■ STOP</span></div>
     <div class="osd chlbl" style="color:var(--bone-dim)">CH 01 · <span id="chName">THE WALL</span></div>
+    <button class="key newloop sounds" id="btnSounds" title="Make your sounds: type what you want, hear it, keep it">✦ MAKE SOUNDS</button>
     <button class="key newloop" id="obOpen" title="Open the loop builder">＋ NEW LOOP</button>
     <button class="key newloop" id="btnExport" title="Bounce 4 bars to WAV + MIDI (drums, 808, chords) for your DAW">⤓ EXPORT</button>
     <button class="key newloop" id="btnTimeline" title="Open the song timeline: arrange your loops into a song">▤ TIMELINE</button>
@@ -2204,7 +2206,7 @@ function tasteForPrompt(){const mine=taste.loops.filter(l=>l.by===taste.uid&&l.t
 /* MAKE IT REAL: swap this step's voices (or the whole kit) for studio takes */
 const gReal=document.getElementById('gReal');
 function realTracks(){return G.i>=0&&GUIDE[G.i].tracks.length?GUIDE[G.i].tracks:TRACKS.map((_,j)=>j);}
-function renderReal(){if(!studio.ready){gReal.disabled=true;gReal.classList.remove('on');gReal.textContent=studio.failed?'MAKE IT REAL · STUDIO KIT DID NOT LOAD':'MAKE IT REAL · LOADING STUDIO…';return;}
+function renderReal(){if(window.SM){gReal.disabled=false;gReal.classList.remove('on');gReal.textContent='✦ MAKE THE SOUNDS FOR THIS PART';return;}if(!studio.ready){gReal.disabled=true;gReal.classList.remove('on');gReal.textContent=studio.failed?'MAKE IT REAL · STUDIO KIT DID NOT LOAD':'MAKE IT REAL · LOADING STUDIO…';return;}
   const tr=realTracks(),all=tr.every(i=>src[i]>0);gReal.disabled=!!ai.busy;gReal.classList.toggle('on',all);
   gReal.textContent=all?'◆ STUDIO TAKES ON · BACK TO SYNTH':'MAKE IT REAL ◆ STUDIO TAKES'+(tr.length===TRACKS.length?' · WHOLE KIT':'');}
 const WANT=[['dark',/dark|muffl|lofi|lo-fi|dust|tape|warm|murky|deep|\blow/],['bright',/bright|crisp|sharp|air|shiny|sizzl|\bhigh/],['short',/short|tight|snappy|quick|click|dry/],
@@ -2221,7 +2223,7 @@ async function makeReal(){if(!studio.ready||ai.busy)return;const tr=realTracks()
   const auto=pickTakes(tr,words);tr.forEach(i=>{src[i]=(pick&&pick[i])||auto[i];});
   renderSource();tr.forEach(flashTrack);ensurePlaying();
   typeInto(gReply,'> STUDIO TAKES IN: '+tr.map(i=>TRACKS[i].name+' T'+src[i]).join(' · ')+by);}
-gReal.addEventListener('click',makeReal);
+gReal.addEventListener('click',()=>{if(window.SM){const t=G.i>=0&&GUIDE[G.i].tracks.length?GUIDE[G.i].tracks[0]:undefined;SM.open(t);}else makeReal();});
 gSet.addEventListener('click',stepPrompt);
 gPrompt.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(!ai.busy)stepPrompt();}});
 wBuild.addEventListener('click',wholePrompt);
@@ -2988,11 +2990,13 @@ function frame(now){if(curTheme==='aura')auraTick(now);else if(curTheme==='plasm
 /* ---------------- boot ---------------- */
 renderTracks();renderReadouts();renderPtn();renderSteps();renderLog();renderXY();renderBpm();loadLane(0);setTransport();renderGuide();renderAI();renderChords();setTimeout(loadStudio,300);renderSaved();   // boot() and the loop builder popup now run when POWER is pressed
 /* bridge for tl/view.js (the timeline): this whole script is private, so it hands the timeline what it needs. Live values are getters. */
-window.GSM={measureLatency,get recWorklet(){return captureBars.worklet;},get ctx(){return ctx;},get limiter(){return limiter;},get analyser(){return analyser;},initAudio,captureBars,loopSnapshot,applySnapshot,deliver,midiBytes,FMT,state,patterns,params,src,studio,TRACKS,LANES,KEYS,play,stop,ensurePlaying,stepDur,curProg,keyIdx,NOTE12,SAVED,renderSaved,renderBpm,typeInto,gReply,lsGet,lsSet,setTheme,setCam};
+window.GSM={select,applyTrack,audition,ai,rateItem,takeId,vote,taste,flashTrack,DEF,BASE,get reduce(){return reduce;},measureLatency,get recWorklet(){return captureBars.worklet;},get ctx(){return ctx;},get limiter(){return limiter;},get analyser(){return analyser;},initAudio,captureBars,loopSnapshot,applySnapshot,deliver,midiBytes,FMT,state,patterns,params,src,studio,TRACKS,LANES,KEYS,play,stop,ensurePlaying,stepDur,curProg,keyIdx,NOTE12,SAVED,renderSaved,renderBpm,typeInto,gReply,lsGet,lsSet,setTheme,setCam};
 requestAnimationFrame(frame);
 })();
 </script>
 <script src="tl/view.js"></script>
+<script src="sm/recipe.js"></script>
+<script src="sm/maker.js"></script>
 
 </body>
 </html>
