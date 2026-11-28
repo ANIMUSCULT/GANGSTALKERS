@@ -149,6 +149,41 @@
 .top #btnSounds.key{color:var(--on-ink);background:linear-gradient(180deg,var(--flame) 0%,var(--acc-mid) 55%,var(--acc-lo) 100%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -2px 0 rgba(0,0,0,.4),0 3px 0 var(--acc-deep),0 0 18px rgba(var(--acc),.6)}
 .top #btnSounds.key:hover{filter:brightness(1.12)}
+/* type system · Silkscreen: Bodoni headings, Barlow Condensed keys and labels, Barlow help text, VT323 only in the LCD box */
+.smwin{font-family:var(--f-text);font-size:16px;line-height:1.35}
+.smttl{font-family:var(--f-ui);font-weight:700;font-size:14px;letter-spacing:.3em}
+.smpill{font-family:var(--f-ui);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase}
+.smpill .opt{font-size:10px;letter-spacing:.14em}
+.smwelcome{font-size:15px}
+.smstep{font-family:var(--f-ui);font-weight:600;font-size:12px;letter-spacing:.3em}
+.smh{font-weight:500;font-size:50px;letter-spacing:-.01em;line-height:1}
+.smh em{font-weight:700}
+.smwhat{font-size:17px}
+.smk{font-family:var(--f-ui);font-weight:600;font-size:17px;letter-spacing:.14em}
+.smk.big{font-size:20px}.smk.go{font-size:18px}.smk.small{font-size:14px}
+.smk kbd{font-size:11px;letter-spacing:.1em}
+.smideas,.smidea{font-size:15px}
+.smidea{font-family:var(--f-text)}
+.smempty{font-size:15px}.smempty b{font-size:18px;font-weight:500}
+.smmaking p{font-family:var(--f-ui);font-weight:600;font-size:20px;letter-spacing:.16em;text-transform:uppercase}
+.smname{font-size:30px}
+.smname span{font-family:var(--f-ui);font-weight:600;font-size:15px;letter-spacing:.1em}
+.smfrom{font-size:14px}
+.smtip{font-size:15px}.smtip b{font-weight:500}
+.smshelf h4{font-family:var(--f-ui);font-weight:600;font-size:12px;letter-spacing:.3em}
+.smchip button{font-family:var(--f-ui);font-weight:600;font-size:15px;letter-spacing:.06em}
+.smchip button.del{font-size:18px}
+.smshelf .none{font-size:14px}
+.smauto{font-size:13px}
+.smgrid .bt{font-family:var(--f-ui);font-weight:600;font-size:11px;letter-spacing:.3em}
+.smsq.roll::after{font-size:16px}
+.smnow{font-size:16px}.smnow b{font-family:var(--f-ui);font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.smgv{font-family:var(--f-ui);font-weight:600;font-size:16px;letter-spacing:.06em;text-transform:uppercase}
+.smgv small{font-size:11px;letter-spacing:.14em}
+.smtoast{font-size:32px;font-weight:700}
+.smtoast small{font-family:var(--f-ui);font-weight:600;font-size:14px;letter-spacing:.2em;text-transform:uppercase}
+.smdone .kit span{font-size:14px}
+@media (max-width:760px){.smh{font-size:36px}.smk{font-size:15px}.smk.big{font-size:17px}}
 html.calm .smprog i,html.calm .smplay.hit,html.calm .smstar{animation:none}
 html.calm .smtoast{transition:none}
 @media (max-width:760px){

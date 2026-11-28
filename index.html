@@ -8,7 +8,7 @@
 <title>GANGSTALKERS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;0,6..96,800;1,6..96,500;1,6..96,700&family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500&family=VT323&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;900&display=swap">
 <style>
 /* Layout: a fixed 1600×900 machine (like a plugin window) scaled to fit. Four LED towers frame a central touchscreen; track list left, profile right; a heavy metal knob deck and backlit keys below. ANIMUSCULT house look: VHS black, flame red, bone. */
@@ -27,7 +27,9 @@
   --acc:255,42,31;--acc2:255,120,100;--glow:255,232,224;
   --acc-pale:#ffb5a0;--acc-hi:#ff8a72;--acc-mid:#c4160d;--acc-lo:#8f0c06;--acc-deep:#3a0503;--acc-refl:#4a1512;--bead:#6e2622;--on-ink:#fff6f2;
   --sur-1:#3d1719;--sur-2:#200b0d;--sur-3:#0e0506;--sur-4:#060203;--srgb1:46,16,18;--srgb2:12,4,5;
-  --f-serif:"Cormorant Garamond","Times New Roman",serif;
+  --f-serif:"Bodoni Moda","Didot","Bodoni 72","Times New Roman",serif;
+  --f-ui:"Barlow Condensed","Arial Narrow",ui-sans-serif,system-ui,sans-serif;
+  --f-text:"Barlow",ui-sans-serif,system-ui,sans-serif;
   --f-osd:"VT323",ui-monospace,"SF Mono",Menlo,monospace;
   --f-led:"Doto","VT323",ui-monospace,monospace;
   color-scheme:dark;
@@ -1156,6 +1158,87 @@ html.calm .screenwrap,html.calm .screenwrap.bubble{transition:none}
   .tlbody{grid-template-columns:150px 1fr}
   .tlrow{grid-template-columns:34px 1fr 26px 26px}.tlrow .ms{width:26px}
 }
+/* ================= TYPE SYSTEM · SILKSCREEN (v33) =================
+   Bodoni Moda: brand and headings. Barlow Condensed: keys and labels, like print on hardware.
+   Barlow: help text. VT323 stays inside the CRT screen; Doto stays on the LEDs.
+   Sizes (stage px): 11 caption · 13 label · 15 key/body · 18 lead · 32+ display.  Spacing: .04em text · .14em keys · .28em captions. */
+body{font-family:var(--f-ui)}
+.screen,.screen .prompt{font-family:var(--f-osd)}
+.obcard,.tlview{font-family:var(--f-ui)}
+:is(.trk,.tlrow) .fv{font-family:var(--f-ui)}
+.prompt:not(.screen .prompt){font-family:var(--f-text)}
+.key,.tbtn,.tiny,.chip,.obchip,.lkmotion,.sw,.feeds button,.tapbtn,.obtools .key,.tlmenu button,.trk,.ptitle,.sublabel,.lcd .lbl,.ro span,.knob .kl,.brand small,.obtop,.lkh,.mshint,.bubhint,.powerhint,.tlbar,.tlrow .tlch,.daw .dh,.daw .dl,.obmeta span{font-weight:600;font-family:var(--f-ui)}
+.hint,.lknote,.savehint,.oblead,.obcoach,.obchoice span,.obskip,.motionask,.tlmsg,.tlask p,.tlempty,.lesson:not(.screen .lesson){font-family:var(--f-text);font-weight:400;letter-spacing:.01em}
+.brand{font-weight:800;letter-spacing:.07em}
+.top .osd{font-family:var(--f-ui);font-weight:600}
+@media (min-width:761px){
+  .brand{font-size:31px}
+  .brand small{font-size:11px;letter-spacing:.32em;margin-top:4px}
+  .top .osd{font-size:16px;letter-spacing:.14em}
+  .lcd .lbl{font-size:11px;letter-spacing:.24em}
+  .key{font-size:15px;letter-spacing:.14em}
+  .key.newloop{font-size:14px}
+  .transport .key{font-size:17px}
+  .steps .key{font-size:13px;letter-spacing:.08em}
+  .steps .key .rt{font-size:11px}
+  .edit .key{font-size:13px}
+  .grid2 .key,.grid5 .key{font-size:14px}
+  #laneKeys .key{font-size:13px;letter-spacing:.06em}
+  .grid5 .key.bank{font-size:11px}
+  .tbtn,.tiny{font-size:12px;letter-spacing:.14em}
+  .ptitle{font-size:13px;letter-spacing:.28em}
+  .sublabel{font-size:11px;letter-spacing:.28em}
+  .trk{font-size:16px;font-weight:500;letter-spacing:.06em}
+  .trk .n{font-size:12px}
+  .ms{font-size:13px}
+  :is(.trk,.tlrow) .fv{font-size:12px}
+  .mshint{font-size:11px;letter-spacing:.14em}
+  .ro span{font-size:11px;letter-spacing:.22em}
+  .knob .kl{font-size:12px;letter-spacing:.22em}
+  .knob.big .kl{font-size:15px;letter-spacing:.28em}
+  .hint{font-size:14px}
+  .rate .key{font-size:13px}
+  .rate .osd{font-size:13px}
+  #lookBtn{font-size:13px;letter-spacing:.14em}
+  .lkh{font-size:11px;letter-spacing:.28em}
+  .lkmotion{font-size:14px}
+  .lknote,.midipanel .lknote{font-size:13px}
+  .sw,.feeds button{font-size:12px;letter-spacing:.12em}
+  .savebar .key{font-size:13px}
+  .savehint,.savedx,.savedtl{font-size:13px}
+  .bubhint{font-size:11px;letter-spacing:.28em}
+  .powerskip{font-size:13px}
+  .powerhint{font-size:12px;letter-spacing:.28em}
+  .motionask{font-size:16px}.motionask .key{font-size:14px}
+  /* loop builder popup */
+  .obtop{font-size:11px;letter-spacing:.28em}
+  .obcase{font-size:16px;letter-spacing:.04em}
+  #obTitle{font-size:34px;letter-spacing:.03em}
+  .oblead{font-size:17px}
+  .obchoice b{font-size:19px;letter-spacing:.12em}
+  .obchoice span{font-size:15px}
+  .daw .dh{font-size:11px}.daw .dl{font-size:13px}
+  .obtools .key{font-size:14px}
+  .tapbtn{font-size:18px}.tapbtn small{font-size:10px}
+  .obcoach{font-size:16px}
+  .obnav .key{font-size:15px}
+  .obta{font-size:17px;font-family:var(--f-text)}
+  .obchip,.obskip{font-size:13px}
+  .obslider{font-size:15px}
+  .obmeta span{font-size:12px;letter-spacing:.14em}
+  /* timeline */
+  .tlhead .key{font-size:14px}
+  .tlhead .tlttl{font-size:26px;letter-spacing:.08em}
+  .tlmsg{font-size:15px}
+  .tlrow .tlch{font-size:12px}.tlrow .tlname{font-size:15px}.tlrow .ms{font-size:12px}.tlrow .fv{font-size:12px}
+  .tlbar{font-size:12px}
+  .tlclip .tlcname{font-size:13px}.tlclip .tlcspd{font-size:11px}.tlclip .tlmore{font-size:13px}
+  .tlmenu button{font-size:14px;letter-spacing:.1em}
+  .tlask p{font-size:17px}
+  .tlaskrow .key{font-size:15px}
+  .tlempty{font-size:15px}
+}
+
 </style>
 </head>
 <body>
