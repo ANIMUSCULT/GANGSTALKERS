@@ -98,9 +98,63 @@
     return out;
   }
 
+  /* ---------- rhythm: where a part hits. A row is 16 steps: 0 off, 1 hit, 2 accent, 3/4 roll, 5 ghost ---------- */
+  const rowKey = r => r.map(v => v ? 1 : 0).join('') + '|' + r.join('');
+  const hits = r => r.reduce((n, v) => n + (v ? 1 : 0), 0);
+  const on = (r, idx) => idx.every(j => r[j]) && hits(r) === idx.length;
+
+  // grooveName: a plain name for a row, by part
+  function grooveName(row, partId) {
+    const n = hits(row), rolls = row.some(v => v === 3 || v === 4), odd = row.some((v, j) => v && j % 2);
+    if (!n) return 'Nothing';
+    const tail = rolls ? ' with rolls' : '';
+    if (partId === 'snare' || partId === 'clap') {
+      if (on(row, [8])) return 'Half-time (slow and heavy)';
+      if (on(row, [4, 12])) return 'On 2 and 4 (classic)';
+      if (row[8] && n <= 3) return 'Half-time with extras';
+      return (n >= 5 ? 'Busy' : 'Off-centre') + tail;
+    }
+    if (partId === 'kick') {
+      if (on(row, [0, 4, 8, 12])) return 'Every beat (four on the floor)';
+      if (n <= 2) return 'Slow and heavy';
+      if (n >= 6) return 'Busy' + tail;
+      return (odd ? 'Bouncy' : 'Simple') + tail;
+    }
+    if (partId === 'hat' || partId === 'ohat') {
+      if (n >= 12) return 'Fast and constant' + tail;
+      if (n <= 2) return 'Just once or twice';
+      if (row.every((v, j) => !v || j % 4 === 2)) return 'In between the beats';
+      if (n <= 4) return 'Slow' + tail;
+      return 'Steady' + tail;
+    }
+    return (n <= 2 ? 'Now and then' : n <= 5 ? 'A few hits' : 'Lots of hits') + tail;
+  }
+
+  // grooves: different rows to choose from, no repeats, the current one left out, sparse to busy
+  function grooves(rows, current, partId, max = 4) {
+    const seen = new Set([rowKey(current || [])]), out = [];
+    for (const r of rows) { const k = rowKey(r); if (seen.has(k) || r.length !== 16) continue; seen.add(k); out.push(r.slice()); }
+    out.sort((a, b) => hits(a) - hits(b));
+    if (out.length <= max) return out;
+    const pick = []; for (let j = 0; j < max; j++) pick.push(out[Math.round(j * (out.length - 1) / (max - 1))]);   // spread across sparse..busy
+    return pick;
+  }
+
+  // vary: a new row close to the given one (move, add or drop a hit), never the same and never empty
+  function vary(row, rand = Math.random) {
+    for (let tries = 0; tries < 40; tries++) {
+      const r = row.slice(), act = rand(), j = Math.floor(rand() * 16);
+      if (act < .4 && r[j]) { const to = (j + (rand() < .5 ? 1 : -1) * (rand() < .5 ? 1 : 2) + 16) % 16; if (!r[to]) { r[to] = r[j]; r[j] = 0; } }
+      else if (act < .75 && !r[j]) r[j] = rand() < .25 ? 5 : 1;
+      else if (r[j] && hits(r) > 1) r[j] = 0;
+      if (hits(r) && rowKey(r) !== rowKey(row)) return r;
+    }
+    const r = row.slice(); const j = r.findIndex(v => !v); if (j >= 0) r[j] = 1; else r[1] = 0; return r;
+  }
+
   const sameRecipe = (a, b) => !!a && !!b && a.src === b.src && KNOBS.every(k => Math.abs(a[k] - b[k]) < .001);
 
-  const GSSM = { PARTS, RULES, KNOBS, RANGE, readWords, shape, pickSource, nameFor, fromClaude, sameRecipe };
+  const GSSM = { PARTS, RULES, KNOBS, RANGE, readWords, shape, pickSource, nameFor, fromClaude, sameRecipe, grooveName, grooves, vary, hits };
   if (typeof module === 'object' && module.exports) module.exports = GSSM;
   else root.GSSM = GSSM;
 })(typeof window !== 'undefined' ? window : globalThis);

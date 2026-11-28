@@ -10,7 +10,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=VT323&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;900&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: a fixed 1600×900 machine (like a plugin window) scaled to fit. Four LED towers frame a central touchscreen; track list left, profile right; a heavy metal knob deck and backlit keys below. ANIMUSCULT house look: VHS black, flame red, bone. */
 :root{
@@ -2675,7 +2674,8 @@ function finishPower(quick){if(powerDone)return;powerDone=true;clearTimeout(powe
   powerEl.classList.add('fade');
   let v=bootVid.volume;const id=setInterval(()=>{v-=.08;if(v<=0){clearInterval(id);bootVid.pause();}else bootVid.volume=v;},60);
   setTimeout(()=>{powerEl.hidden=true;bootVid.removeAttribute('src');bootVid.load();},1100);
-  if(lsGet('gs_ob_skip')!=='1')setTimeout(()=>obOpen('intro'),quick?700:2000);}
+  if(window.SM){if(SM.autoOpen())setTimeout(()=>{if(!OB.open&&(!window.TL||document.getElementById('tlView').hidden))SM.open(undefined,{welcome:true});},quick?700:2000);}   // the Sound Maker is the front door now
+  else if(lsGet('gs_ob_skip')!=='1')setTimeout(()=>obOpen('intro'),quick?700:2000);}
 // intro lettering: single LEDs twinkle, and every few seconds one letter cuts out twice like a dying module.
 // Dot centres were measured from the photo (x, y in its 2000×1497 pixels, letter 0–11); the canvas shares the photo's box and push-in.
 (()=>{const cv=document.getElementById('iaDots'),img=document.querySelector('.ia-main');if(!cv||!img||!cv.getContext)return;
@@ -2990,7 +2990,7 @@ function frame(now){if(curTheme==='aura')auraTick(now);else if(curTheme==='plasm
 /* ---------------- boot ---------------- */
 renderTracks();renderReadouts();renderPtn();renderSteps();renderLog();renderXY();renderBpm();loadLane(0);setTransport();renderGuide();renderAI();renderChords();setTimeout(loadStudio,300);renderSaved();   // boot() and the loop builder popup now run when POWER is pressed
 /* bridge for tl/view.js (the timeline): this whole script is private, so it hands the timeline what it needs. Live values are getters. */
-window.GSM={select,applyTrack,audition,ai,rateItem,takeId,vote,taste,flashTrack,DEF,BASE,get reduce(){return reduce;},measureLatency,get recWorklet(){return captureBars.worklet;},get ctx(){return ctx;},get limiter(){return limiter;},get analyser(){return analyser;},initAudio,captureBars,loopSnapshot,applySnapshot,deliver,midiBytes,FMT,state,patterns,params,src,studio,TRACKS,LANES,KEYS,play,stop,ensurePlaying,stepDur,curProg,keyIdx,NOTE12,SAVED,renderSaved,renderBpm,typeInto,gReply,lsGet,lsSet,setTheme,setCam};
+window.GSM={buildPattern,renderSteps,renderLog,select,applyTrack,audition,ai,rateItem,takeId,vote,taste,flashTrack,DEF,BASE,get reduce(){return reduce;},measureLatency,get recWorklet(){return captureBars.worklet;},get ctx(){return ctx;},get limiter(){return limiter;},get analyser(){return analyser;},initAudio,captureBars,loopSnapshot,applySnapshot,deliver,midiBytes,FMT,state,patterns,params,src,studio,TRACKS,LANES,KEYS,play,stop,ensurePlaying,stepDur,curProg,keyIdx,NOTE12,SAVED,renderSaved,renderBpm,typeInto,gReply,lsGet,lsSet,setTheme,setCam};
 requestAnimationFrame(frame);
 })();
 </script>
